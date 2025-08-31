@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<!-- Save as: Birthday.html and open directly in a browser -->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Connect Internet to listen music</title>
+  <style>
+    :root{
+      --gold:#d4af37; /* elegant gold */
+      --gold-bright:#ffd700; /* bright gold for accents */
+      --ink:#4d4d4d;
+      --paper:#fffdf5;
+      --pastel1:#fff3e6; /* peach */
+      --pastel2:#ffe6f0; /* blush */
+      --radius:18px;
+      --shadow:0 10px 24px rgba(0,0,0,.12);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; color:var(--ink);
+      background:
+        radial-gradient(1000px 480px at 100% -10%, rgba(255,215,0,.08), transparent 60%),
+        linear-gradient(180deg, var(--pastel1), var(--pastel2));
+      overflow-x:hidden;
+    }
+    a{color:inherit}
+
+    /* Header */
+    header{ text-align:center; padding:48px 16px 28px; position:relative }
+    h1{ font-size:clamp(2.2rem,6vw,3.2rem); margin:.3rem 0; color:var(--gold); text-shadow:0 1px 2px rgba(0,0,0,.06) }
+    .tagline{ opacity:.85 }
+    .hero-img{ width:min(980px,92vw); height:clamp(240px,32vw,420px); object-fit:cover; border-radius:24px; box-shadow:var(--shadow); border:2px solid #fff9 }
+
+    /* Nav */
+    nav{
+      position:sticky; top:0; z-index:50; backdrop-filter: blur(6px);
+      background:linear-gradient(180deg, rgba(255,255,255,.86), rgba(255,255,255,.66));
+      border-bottom:1px solid rgba(0,0,0,.06);
+    }
+    .navwrap{ display:flex; gap:12px; align-items:center; justify-content:center; padding:10px 12px; flex-wrap:wrap }
+    .chip{ border:1px solid rgba(0,0,0,.08); background:#fff; padding:.55rem .9rem; border-radius:999px; cursor:pointer; text-decoration:none; font-weight:600 }
+
+    /* Sections */
+    section{ padding:36px 16px }
+    .wrap{ max-width:1100px; margin:0 auto }
+    .section-title{ text-align:center; margin:0 0 16px; color:#5b4b1a }
+    .card{ background:var(--paper); border:1px solid rgba(0,0,0,.06); border-radius:var(--radius); box-shadow:var(--shadow) }
+
+    /* Gallery */
+    .gallery{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:14px }
+    .gallery img{ width:100%; height:200px; object-fit:cover; border-radius:14px }
+
+    /* Reveal button */
+    .btn{ border:1px solid rgba(0,0,0,.1); background:linear-gradient(180deg,var(--gold-bright),#f2c94c); color:#3b2e06; padding:.85rem 1.2rem; font-weight:700; border-radius:999px; cursor:pointer; box-shadow:0 10px 18px rgba(212,175,55,.25); transition: transform .15s ease }
+    .btn:hover{ transform:translateY(-1px) }
+
+    /* Modal */
+    .modal{ position:fixed; inset:0; display:none; align-items:center; justify-content:center; background:rgba(0,0,0,.55); z-index:100 }
+    .modal.show{ display:flex }
+    .modal-card{ max-width:min(640px,92vw); padding:22px 22px 18px; border-radius:22px; border:2px solid var(--gold-bright); background:linear-gradient(180deg,#fffef7,#fff8e7); box-shadow:0 18px 40px rgba(0,0,0,.25); position:relative }
+    .modal-card h3{ margin:0 0 10px; color:var(--gold) }
+    .close{ position:absolute; right:12px; top:12px; border:none; background:#fff; border:1px solid rgba(0,0,0,.1); border-radius:999px; padding:.35rem .6rem; cursor:pointer }
+
+    /* Countdown */
+    .count-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px }
+    .timebox{ background:#fff; border:1px solid rgba(0,0,0,.06); border-radius:14px; padding:14px; text-align:center }
+    .timebox .num{ font-size:clamp(1.6rem,5vw,2.2rem); font-weight:800; color:#5b4b1a }
+    .timebox .lbl{ font-size:.8rem; letter-spacing:.08em; opacity:.7 }
+
+    /* Wishes Wall */
+    .wishes{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px }
+    .wish{ padding:14px 16px; border-left:4px solid var(--gold); border-radius:12px; background:#fff }
+    .wish small{ opacity:.7 }
+
+    /* Fun Facts */
+    .facts{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px }
+    .fact{ padding:14px 16px; border-radius:12px; background:#fff; border:1px dashed #e8d9a6 }
+    .fact b{ color:#5b4b1a }
+
+    /* Music */
+    .player{ border-radius:16px; overflow:hidden; border:1px solid rgba(0,0,0,.06); box-shadow:var(--shadow) }
+
+    /* Confetti */
+    #confetti{ position:fixed; inset:0; pointer-events:none; overflow:hidden }
+    .confetti-piece{ position:absolute; top:-6vh; width:10px; height:6px; opacity:.95; animation:fall linear infinite }
+    @keyframes fall{ from{ transform:translateY(-10vh) rotate(0) } to{ transform:translateY(110vh) rotate(720deg) } }
+
+    footer{ text-align:center; padding:18px; color:#6d5b22 }
+  </style>
+</head>
+<body>
+  <!-- Confetti layer -->
+  <div id="confetti" aria-hidden="true"></div>
+
+  <!-- Header -->
+  <header>
+    <h1>Happy Birthday in Advance, <span style="border-bottom:3px solid var(--gold-bright)">Nibe...</span>!</h1>
+    <p class="tagline">Wishing you the brightest year yet ✨</p>
+    <div style="margin:18px auto 0"><img class="hero-img" src="C:\Program Files\Google\Chrome\BBth\home.jpg, \
+      <svg xmlns='C:\Program Files\Google\Chrome\BBth\home.jpg' width='1200' height='600'>\
+        <defs><linearGradient id='g' x1='0' y1='0' x2='1' y2='1'>\
+          <stop offset='0%' stop-color='%23fff3e6'/><stop offset='100%' stop-color='%23ffe6f0'/>\
+        </linearGradient></defs>\
+        <rect width='1200' height='600' fill='url(%23g)'/>\
+        <text x='50%' y='50%' font-size='48' dominant-baseline='middle' text-anchor='middle' fill='%23d4af37'>Add your hero photo here</text>\
+      </svg>" alt="Hero" /></div>
+    <div style="margin:18px auto 0; display:flex; gap:10px; justify-content:center; flex-wrap:wrap">
+      <a class="chip" href="#countdown">Countdown</a>
+      <a class="chip" href="#wishes">Wishes</a>
+      <a class="chip" href="#funfacts">Fun Facts</a>
+      <a class="chip" href="#music">Music</a>
+      <button class="btn" id="openCard">Open Birthday Message</button>
+    </div>
+  </header>
+
+  <!-- Sticky nav (anchors) -->
+  <nav>
+    <div class="navwrap">
+      <a class="chip" href="#countdown">Countdown</a>
+      <a class="chip" href="#gallery">Gallery</a>
+      <a class="chip" href="#wishes">Wishes Wall</a>
+      <a class="chip" href="#funfacts">Fun Facts</a>
+      <a class="chip" href="#music">Music</a>
+    </div>
+  </nav>
+
+  <!-- Countdown Section -->
+  <section id="countdown">
+    <div class="wrap">
+      <h2 class="section-title">Countdown to the Big Day</h2>
+      <div class="card" style="padding:18px">
+        <div class="count-grid" id="timer">
+          <div class="timebox"><div class="num" id="days">0</div><div class="lbl">DAYS</div></div>
+          <div class="timebox"><div class="num" id="hours">0</div><div class="lbl">HOURS</div></div>
+          <div class="timebox"><div class="num" id="mins">0</div><div class="lbl">MINUTES</div></div>
+          <div class="timebox"><div class="num" id="secs">0</div><div class="lbl">SECONDS</div></div>
+        </div>
+        <p style="text-align:center; opacity:.75; margin:.8rem 0 0">Next birthday: <b id="nextDate">—</b></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Section -->
+  <section id="gallery">
+    <div class="wrap">
+      <h2 class="section-title">Memory Lane</h2>
+      <div class="gallery">
+        <img alt="Add photo 1" src="data:image/svg+xml;utf8, \
+          <svg xmlns='C:\Program Files\Google\Chrome\BBth\1.jpg' width='600' height='400'><rect width='600' height='400' fill='%23fff3e6'/>\
+          <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='22' fill='%235b4b1a'>Add photo 1</text></svg>">
+        <img alt="Add photo 2" src="data:image/svg+xml;utf8, \
+          <svg xmlns='C:\Program Files\Google\Chrome\BBth\2.jpg' width='600' height='400'><rect width='600' height='400' fill='%23ffe6f0'/>\
+          <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='22' fill='%235b4b1a'>Add photo 2</text></svg>">
+        <img alt="Add photo 3" src="data:image/svg+xml;utf8, \
+          <svg xmlns='C:\Program Files\Google\Chrome\BBth\3.jpg' width='600' height='400'><rect width='600' height='400' fill='%23fff7e6'/>\
+          <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='22' fill='%235b4b1a'>Add photo 3</text></svg>">
+        <img alt="Add photo 4" src="data:image/svg+xml;utf8, \
+          <svg xmlns='C:\Program Files\Google\Chrome\BBth\4.jpg' width='600' height='400'><rect width='600' height='400' fill='%23f8f0ff'/>\
+          <text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' font-size='22' fill='%235b4b1a'>Add photo 4</text></svg>">
+      </div>
+    </div>
+  </section>
+
+  <!-- Wishes Wall -->
+  <section id="wishes">
+    <div class="wrap">
+      <h2 class="section-title">Birthday Wishes Wall</h2>
+      <div class="wishes">
+        <div class="wish card"><p>Advance happy birthday to you Nibe 🥳 hope your day turns out as special as you are.</p><small>— Blessa</small></div>
+        <div class="wish card"><p>Wishing you an amazing birthday in advance, stay blessed and keep shining.</p><small>— Elisha </small></div>
+        <div class="wish card"><p>Hey my one and only Nibi, you are so precious I've ever seen. I thank God for this day because this is the day I always remember and to celebrate my happiness with you!!</p><small>— Varesh </small></div>
+        <div class="wish card"><p>May your dreams bloom like spring and sparkle like starlight.</p><small>— Bachha </small></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Fun Facts -->
+  <section id="funfacts">
+    <div class="wrap">
+      <h2 class="section-title">Fun Facts about You</h2>
+      <div class="facts">
+        <div class="fact"><b>Age today:</b> <span id="ageToday">—</span></div>
+        <div class="fact"><b>Turning next:</b> <span id="turning">—</span> on <span id="ff-next">—</span></div>
+        <div class="fact"><b>Born on:</b> <span id="bornDay">—</span></div>
+	<div class="fact"><b>Nicknames:</b> Rahne de jagah nahi bachega </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Music -->
+  <section id="music">
+    <div class="wrap">
+      <h2 class="section-title">Party Vibes</h2>
+      <div class="player card">
+        <iframe style="border:0; width:100%; height:352px" src="https://open.spotify.com/track/7l1qvxWjxcKpB9PCtBuTbU?si=5fd4e17ed4904f81" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" title="Birthday Playlist"></iframe>
+      </div>
+    </div>
+  </section>
+
+  <footer>Made with ♥ Arvi • © <span id="year"></span></footer>
+
+  <!-- Modal: Birthday Card -->
+  <div class="modal" id="modal">
+    <div class="modal-card">
+      <button class="close" id="closeCard" title="Close">✕</button>
+      <h3>For Nibe</h3>
+      <p style="line-height:1.6; margin:.4rem 0 0.6rem">
+        Dear Nibe,
+        <br />On this special day, I hope you feel just how loved and celebrated you are. Here's to new adventures, warm laughter, and dreams coming true. Happy Birthday! ✨🎉 <Small> - Arvind Sagar <Small>
+      </p>
+      <div id="innerConfetti" style="position:relative; height:0"></div>
+    </div>
+  </div>
+
+  <script>
+    // ---------- Config ----------
+    const NAME = 'Nibe';
+    const DOB = { y: 2004, m: 9, d: 1 }; // Sep 01, 2004
+
+    // ---------- Confetti (ambient) ----------
+    const confettiColors = ['#ffd700','#fff3e6','#ffe6f0','#ffffff'];
+    const confetti = document.getElementById('confetti');
+    function addPiece(target){
+      const s = document.createElement('span');
+      s.className = 'confetti-piece';
+      s.style.left = Math.random()*100 + 'vw';
+      s.style.background = confettiColors[Math.floor(Math.random()*confettiColors.length)];
+      const dur = 6 + Math.random()*4; s.style.animationDuration = dur + 's';
+      s.style.width = 8 + Math.random()*8 + 'px'; s.style.height = 4 + Math.random()*4 + 'px';
+      s.style.transform = 'rotate(' + (Math.random()*360) + 'deg)';
+      target.appendChild(s);
+      setTimeout(()=> s.remove(), (dur+0.2)*1000);
+    }
+    // gentle drizzle
+    for(let i=0;i<70;i++) addPiece(confetti);
+    setInterval(()=> addPiece(confetti), 280);
+
+    // ---------- Birthday Card (modal) ----------
+    const modal = document.getElementById('modal');
+    document.getElementById('openCard').addEventListener('click', ()=>{ modal.classList.add('show'); burst(80); });
+    document.getElementById('closeCard').addEventListener('click', ()=> modal.classList.remove('show'));
+    modal.addEventListener('click', (e)=>{ if(e.target === modal) modal.classList.remove('show'); });
+
+    // small burst inside modal
+    function burst(n){
+      const inner = document.getElementById('innerConfetti');
+      for(let i=0;i<n;i++) addPiece(confetti);
+    }
+
+    // ---------- Countdown ----------
+    function nextBirthday(now){
+      const year = (now.getMonth()+1 > DOB.m || (now.getMonth()+1 === DOB.m && now.getDate() > DOB.d)) ? now.getFullYear()+1 : now.getFullYear();
+      const dt = new Date(year, DOB.m-1, DOB.d, 0,0,0,0);
+      return dt;
+    }
+    function pad(n){ return String(n).padStart(2,'0'); }
+    function tick(){
+      const now = new Date();
+      const next = nextBirthday(now);
+      const diff = next - now;
+      const days = Math.floor(diff/86400000);
+      const hours = Math.floor((diff%86400000)/3600000);
+      const mins = Math.floor((diff%3600000)/60000);
+      const secs = Math.floor((diff%60000)/1000);
+      document.getElementById('days').textContent = days;
+      document.getElementById('hours').textContent = pad(hours);
+      document.getElementById('mins').textContent = pad(mins);
+      document.getElementById('secs').textContent = pad(secs);
+      document.getElementById('nextDate').textContent = next.toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+    }
+    tick(); setInterval(tick, 1000);
+
+    // ---------- Fun Facts ----------
+    function computeAgeToday(){
+      const now = new Date();
+      let age = now.getFullYear() - DOB.y;
+      const hasHad = (now.getMonth()+1 > DOB.m) || ((now.getMonth()+1 === DOB.m) && now.getDate() >= DOB.d);
+      if(!hasHad) age -= 1;
+      return age;
+    }
+    function bornWeekday(){
+      const d = new Date(DOB.y, DOB.m-1, DOB.d);
+      return d.toLocaleDateString(undefined,{ weekday:'long'});
+    }
+    (function initFacts(){
+      const now = new Date();
+      const next = nextBirthday(now);
+      document.getElementById('ageToday').textContent = computeAgeToday();
+      document.getElementById('turning').textContent = computeAgeToday()+1;
+      document.getElementById('ff-next').textContent = next.toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+      document.getElementById('bornDay').textContent = bornWeekday();
+      document.getElementById('year').textContent = String(now.getFullYear());
+    })();
+  </script>
+</body>
+</html>
